@@ -1,0 +1,16 @@
+name: "Gen pio Theme"
+type: theme
+description: "A custom theme for Barangay Pio Del Pilar"
+core_version_requirement: ^10 || ^11
+base theme: classy
+
+libraries:
+  - gen_pio_theme/global-styling
+
+regions:
+  banner: "Banner"
+  header: "Header"
+  primary_menu: "Primary menu"
+  secondary_menu: "Secondary menu"
+  content: "Content"
+  footer: "Footer"
