@@ -814,7 +814,7 @@ $settings['migrate_node_migrate_type_classic'] = FALSE;
 #   include $app_root . '/' . $site_path . '/settings.local.php';
 # }
 $databases['default']['default'] = array (
-  'database' => 'gen-pio',
+  'database' => 'brgy-pio',
   'username' => 'root',
   'password' => '',
   'prefix' => '',
@@ -825,3 +825,5 @@ $databases['default']['default'] = array (
   'autoload' => 'core/modules/mysql/src/Driver/Database/mysql/',
 );
 $settings['config_sync_directory'] = 'sites/default/files/config_vilULpEx40woB50Jl5HQXsPhgHE4iwYI5YD1RZE8pImtpaaHAROhWfKR-20y-ywokvcC5kWY6A/sync';
+$config['system.performance']['css']['preprocess'] = FALSE;
+$config['system.performance']['js']['preprocess'] = FALSE;
