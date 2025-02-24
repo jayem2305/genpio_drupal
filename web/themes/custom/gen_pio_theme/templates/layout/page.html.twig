@@ -21,6 +21,9 @@
     {% include '@gen_pio_theme/layout/secondsection.html.twig' %}
   </main>
   <!--Second section end -->
+  <footer>
+      {% include '@gen_pio_theme/templates/layout/footer.html.twig' %}
+  </footer>
 </body>
 {% else %}
 
@@ -100,12 +103,15 @@
       </div>
     </div>
 
+    {% block footer %}
     <footer class="site-footer">
       <div class="site-footer__inner container">
         {{ page.footer_top }}
+         {% include '@gen_pio_theme/templates/layout/footer.html.twig' %}
         {{ page.footer_bottom }}
       </div>
     </footer>
+    {% endblock %}
 
     <div class="overlay" data-drupal-selector="overlay"></div>
 
