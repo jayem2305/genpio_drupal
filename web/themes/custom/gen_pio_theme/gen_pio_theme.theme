@@ -1,0 +1,33 @@
+<?php
+
+function gen_pio_theme_preprocess_page(&$variables) {
+    // Check if the current route is the front page
+    if (\Drupal::routeMatch()->getRouteName() == 'view.frontpage.page_1') {
+        \Drupal::logger('gen_pio_theme')->notice('Preprocess function triggered.');
+
+        // Fetch the latest published node of type "image_carousel"
+        $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
+        $nids = $query->condition('type', 'image_carousel') // Ensure this is the correct machine name
+            ->condition('status', 1)
+            ->sort('created', 'DESC')
+            ->range(0, 1)
+            ->accessCheck(TRUE) // ✅ Add access check
+            ->execute();
+
+        \Drupal::logger('gen_pio_theme')->notice('NIDs found: @count', ['@count' => count($nids)]);
+
+        if (!empty($nids)) {
+            $nid = reset($nids);
+            $node = \Drupal\node\Entity\Node::load($nid);
+
+            if ($node) {
+                $variables['node'] = $node;
+                \Drupal::logger('gen_pio_theme')->notice('Loaded node @nid', ['@nid' => $nid]);
+            } else {
+                \Drupal::logger('gen_pio_theme')->error('Failed to load node @nid', ['@nid' => $nid]);
+            }
+        }
+    }
+}
+
+?>
