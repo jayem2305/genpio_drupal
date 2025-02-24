@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Implements hook_preprocess_page().
+ */
 function gen_pio_theme_preprocess_page(&$variables) {
     // Check if the current route is the front page
     if (\Drupal::routeMatch()->getRouteName() == 'view.frontpage.page_1') {
@@ -7,27 +10,85 @@ function gen_pio_theme_preprocess_page(&$variables) {
 
         // Fetch the latest published node of type "image_carousel"
         $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
-        $nids = $query->condition('type', 'image_carousel') // Ensure this is the correct machine name
+        $nids = $query->condition('type', 'image_carousel')
             ->condition('status', 1)
             ->sort('created', 'DESC')
             ->range(0, 1)
-            ->accessCheck(TRUE) // ✅ Add access check
+            ->accessCheck(TRUE)
             ->execute();
-
-        \Drupal::logger('gen_pio_theme')->notice('NIDs found: @count', ['@count' => count($nids)]);
 
         if (!empty($nids)) {
             $nid = reset($nids);
             $node = \Drupal\node\Entity\Node::load($nid);
-
             if ($node) {
                 $variables['node'] = $node;
-                \Drupal::logger('gen_pio_theme')->notice('Loaded node @nid', ['@nid' => $nid]);
-            } else {
-                \Drupal::logger('gen_pio_theme')->error('Failed to load node @nid', ['@nid' => $nid]);
+            }
+        }
+
+        // Fetch the latest 4 published news articles
+        $news_nids = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+            ->condition('type', 'news_content') // Ensure your news content type is correct
+            ->condition('status', 1)
+            ->sort('field_news_date', 'DESC')
+            ->range(0, 1) // Fetch the latest 4 news articles
+            ->accessCheck(TRUE)
+            ->execute();
+
+        $variables['latest_news'] = !empty($news_nids) ? \Drupal\node\Entity\Node::loadMultiple($news_nids) : [];
+
+        $news_all = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+        ->condition('type', 'news_content') // Ensure your news content type is correct
+        ->condition('status', 1)
+        ->sort('field_news_date', 'DESC')
+        ->accessCheck(TRUE)
+        ->execute();
+
+        $variables['latest_news_all'] = !empty($news_all) ? \Drupal\node\Entity\Node::loadMultiple($news_all) : [];
+
+        // Fetch the latest 4 published events
+        $events_nids = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+            ->condition('type', 'events_contents') // Ensure your events content type is correct
+            ->condition('status', 1)
+            ->sort('field_events_date', 'DESC')
+            ->range(0, 3) // Fetch the latest 4 events
+            ->accessCheck(TRUE)
+            ->execute();
+
+        $variables['latest_events'] = !empty($events_nids) ? \Drupal\node\Entity\Node::loadMultiple($events_nids) : [];
+
+      
+    }else{
+         // Fetch the latest 4 published news articles
+         $news_nids = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+         ->condition('type', 'news_content') // Ensure your news content type is correct
+         ->condition('status', 1)
+         ->sort('field_news_date', 'DESC')
+         ->accessCheck(TRUE)
+         ->execute();
+
+        $variables['latest_news_all'] = !empty($news_nids) ? \Drupal\node\Entity\Node::loadMultiple($news_nids) : [];
+
+        $events_nids = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+        ->condition('type', 'events_contents') // Ensure your news content type is correct
+        ->condition('status', 1)
+        ->sort('field_events_date', 'DESC')
+        ->accessCheck(TRUE)
+        ->execute();
+
+       $variables['latest_events_all'] = !empty($events_nids) ? \Drupal\node\Entity\Node::loadMultiple($events_nids) : [];
+    }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter() for page templates.
+ */
+function mytheme_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+    if ($node = \Drupal::routeMatch()->getParameter('node')) {
+        if ($node instanceof \Drupal\node\NodeInterface) {
+            if ($node->getType() == 'news_content') { // Adjust this based on your actual content type
+                $suggestions[] = 'page__news';
             }
         }
     }
 }
-
 ?>

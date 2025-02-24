@@ -1,0 +1,44 @@
+{# page--all-news.html.twig #}
+{% include '@gen_pio_theme/layout/header.html.twig' %}
+<section id="" class="title-banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 title-info">
+                <h5 class="mt-4">NEWS</h5>                
+            </div>
+        </div>
+    </div>
+</section>
+<section id="" class="news-section common_bg">
+    <div class="container reveal active">
+        <div class="row row-cols-1 row-cols-md-2 g-4 news d-flex justify-content-center">
+            {% if latest_news_all is defined and latest_news_all %}
+                {% for news_item in latest_news_all %}
+                    <div class="col news-col">
+                        <div class="card mb-3">
+                            <div class="row g-0">
+                                <div class="col-3 news-date">
+                                    <h1>{{ news_item.field_news_date.value|date("d") }}</h1>
+                                    <h6>{{ news_item.field_news_date.value|date("M Y") }}</h6>
+                                </div>
+                                <div class="col-9 news-details">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ news_item.label }}</h5>
+                                        <p class="card-text">{{ news_item.body.value|striptags|raw }}</p>
+                                        <p class="card-text card-a">
+                                            <a href="{{ path('gen_pio.news_detail') }}" role="button">
+                                                Read More <i class="fas fa-arrow-right"></i>
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>		
+                {% endfor %}
+            {% else %}
+                <p class="text-center">No news available.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
