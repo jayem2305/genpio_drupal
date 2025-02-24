@@ -1,0 +1,7 @@
+name: "Gen Pio"
+type: module
+description: "Custom module for news management."
+core_version_requirement: ^9 || ^10
+package: Custom
+dependencies:
+  - drupal:node

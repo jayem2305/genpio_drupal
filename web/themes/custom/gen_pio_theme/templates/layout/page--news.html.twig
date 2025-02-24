@@ -1,0 +1,28 @@
+{% include '@gen_pio_theme/layout/header.html.twig' %}
+
+<section id="" class="events-section">
+    <div class="container reveal active">
+        <div class="row mb-5">
+            <div class="col-12 events-back-page">
+                <a class="btn btn-events-ct" href="https://brgypiodelpilarmakati.com.ph/events" role="button">
+                    <i class="fas fa-arrow-circle-left"></i> Back to Events
+                </a>
+            </div>
+        </div>
+        <div class="row events-pages">
+            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 order-lg-last pages-img">
+                <img src="https://brgypiodelpilarmakati.com.ph/assets/images/events/concert-jan-2025.jpg" class="img-fluid rounded-start" alt="...">
+            </div>
+            <div class="col-12 col-xs-12 col-sm-12 col-md-6 col-lg-6 pages-title">
+                <h1>{{ node.id }}</h1>
+                {% if news_item %}
+                    <h4>{{ news_item.title }}</h4>
+                    <div>{{ news_item.body|raw }}</div> {# Use 'raw' to render HTML #}
+                {% else %}
+                    <p class="text-center">News not found.</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</section>

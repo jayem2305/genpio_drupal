@@ -827,3 +827,4 @@ $databases['default']['default'] = array (
 $settings['config_sync_directory'] = 'sites/default/files/config_vilULpEx40woB50Jl5HQXsPhgHE4iwYI5YD1RZE8pImtpaaHAROhWfKR-20y-ywokvcC5kWY6A/sync';
 $config['system.performance']['css']['preprocess'] = FALSE;
 $config['system.performance']['js']['preprocess'] = FALSE;
+$config['system.logging']['error_level'] = 'verbose';

@@ -5,4 +5,4 @@ Uname: Gen-pio-delpilar
 pass: NewStrongPassword123!
 
 bugs:
-Carousel doesn't retrive image when node numbers change or edit the content.
+display of each event and news 

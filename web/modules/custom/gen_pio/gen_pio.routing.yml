@@ -1,0 +1,31 @@
+gen_pio.news_detail:
+  path: "/news/{id}"
+  defaults:
+    _controller: '\Drupal\gen_pio\Controller\NewsController::newsDetail'
+    _title: "News"
+  requirements:
+    _permission: "access content" # Adjust permissions as necessary
+
+gen_pio_theme.all_news:
+  path: "/all-news"
+  defaults:
+    _controller: '\Drupal\gen_pio\Controller\NewsController::allNews'
+    _title: "All News"
+  requirements:
+    _permission: "access content" # Adjust permissions as necessary
+
+gen_pio.all_events:
+  path: "/all-events"
+  defaults:
+    _controller: '\Drupal\gen_pio\Controller\NewsController::allevents'
+    _title: "All Events"
+  requirements:
+    _permission: "access content" # Adjust permissions as necessary
+
+gen_pio_theme.aboutus:
+  path: "/about"
+  defaults:
+    _controller: '\Drupal\gen_pio\Controller\NewsController::aboutus'
+    _title: "About Us"
+  requirements:
+    _permission: "access content" # Adjust permissions as necessary
