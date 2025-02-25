@@ -3,7 +3,13 @@
 /**
  * Implements hook_preprocess_page().
  */
+use Drupal\node\Entity\Node;
+use Drupal\file\Entity\File;
+use Drupal\Core\DrupalKernel;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 function gen_pio_theme_preprocess_page(&$variables) {
+    
     // Check if the current route is the front page
     if (\Drupal::routeMatch()->getRouteName() == 'view.frontpage.page_1') {
         \Drupal::logger('gen_pio_theme')->notice('Preprocess function triggered.');
@@ -76,19 +82,171 @@ function gen_pio_theme_preprocess_page(&$variables) {
         ->execute();
 
        $variables['latest_events_all'] = !empty($events_nids) ? \Drupal\node\Entity\Node::loadMultiple($events_nids) : [];
+
+       $officials_nids = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+        ->condition('type', 'barangay_official')
+        ->condition('status', 1)
+        ->accessCheck(TRUE)
+        ->execute();
+
+        $officials = [];
+
+        if (!empty($officials_nids)) {
+            $nodes = Node::loadMultiple($officials_nids);
+            $file_url_generator = \Drupal::service('file_url_generator'); // Properly load the service
+
+            foreach ($nodes as $node) {
+                $image_url = '';
+
+                if ($node->hasField('field_image_of_official') && !$node->get('field_image_of_official')->isEmpty()) {
+                    $image_entity = $node->get('field_image_of_official')->entity;
+                    if ($image_entity instanceof File) {
+                        $image_url = $file_url_generator->generateAbsoluteString($image_entity->getFileUri());
+                    }
+                }
+
+                $officials[] = [
+                    'label' => $node->getTitle(),
+                    'position' => $node->get('field_position')->value ?? '',
+                    'image' => $image_url,
+                ];
+            }
+        }
+
+        $variables['officials'] = $officials;
+
+        $SKofficials_nids = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+        ->condition('type', 'sk_officials')
+        ->condition('status', 1)
+        ->accessCheck(TRUE)
+        ->execute();
+
+        $SKofficials = [];
+
+        if (!empty($SKofficials_nids)) {
+            $nodes = Node::loadMultiple($SKofficials_nids);
+            $file_url_generator = \Drupal::service('file_url_generator'); // Properly load the service
+
+            foreach ($nodes as $node) {
+                $image_url_sk = '';
+
+                if ($node->hasField('field_sk_image') && !$node->get('field_sk_image')->isEmpty()) {
+                    $image_entity = $node->get('field_sk_image')->entity;
+                    if ($image_entity instanceof File) {
+                        $image_url_sk = $file_url_generator->generateAbsoluteString($image_entity->getFileUri());
+                    }
+                }
+
+                $SKofficials[] = [
+                    'label' => $node->getTitle(),
+                    'position' => $node->get('field_sk_position')->value ?? '',
+                    'image' => $image_url_sk,
+                ];
+            }
+        }
+
+        $variables['sk_officials'] = $SKofficials;
+        
     }
+    // Initialize the array
+$variables['latest_news_content'] = [];
+
+// Retrieve the node ID from the route
+$id = \Drupal::routeMatch()->getParameter('id'); // Get the ID from the route
+
+// Ensure ID is an integer
+if (!is_numeric($id)) {
+    \Drupal::logger('gen_pio')->debug('Invalid ID: @id', ['@id' => $id]);
+    return; // Stop processing if the ID is invalid
+}
+
+\Drupal::logger('gen_pio')->debug('Retrieved News ID: @id', ['@id' => $id]);
+
+// Debugging: Log the retrieved ID
+\Drupal::logger('gen_pio')->debug('Fixed Retrieved News ID: @id', ['@id' => $id]);
+
+if (!empty($news_nids) && $id) {
+    // Debugging: Check if ID exists in news_nids
+    \Drupal::logger('gen_pio')->debug('Available News IDs: @ids', ['@ids' => implode(',', $news_nids)]);
+
+    // Load the nodes
+    $nodes = \Drupal\node\Entity\Node::loadMultiple($news_nids);
+    
+    foreach ($nodes as $node) {
+        // Debugging: Log the current node ID
+        \Drupal::logger('gen_pio')->debug('Checking Node ID: @node_id', ['@node_id' => $node->id()]);
+
+        // Only process the node that matches the requested ID
+        if ($node->id() == $id) {
+            \Drupal::logger('gen_pio')->debug('Matching News Found: @id', ['@id' => $id]);
+
+            $variables['latest_news_content'][] = [
+                'id' => $node->id(),
+                'label' => $node->getTitle(),
+                'date' => $node->get('field_news_date')->value ?? '',
+                'body' => $node->get('body')->value ?? '',
+                'image' => !empty($node->get('field_news_image')->entity) ? 
+                    \Drupal::service('file_url_generator')->generateAbsoluteString($node->get('field_news_image')->entity->getFileUri()) : '',
+                'url' => $node->toUrl()->toString(),
+            ];
+            break; // Stop after finding the correct news
+        }
+    }
+}
+
+// Debugging: Log final output
+\Drupal::logger('gen_pio')->debug('Final Latest News Content: @content', ['@content' => print_r($variables['latest_news_content'], TRUE)]);
+
+    
+
 }
 
 /**
  * Implements hook_theme_suggestions_HOOK_alter() for page templates.
  */
-function mytheme_theme_suggestions_page_alter(array &$suggestions, array $variables) {
-    if ($node = \Drupal::routeMatch()->getParameter('node')) {
-        if ($node instanceof \Drupal\node\NodeInterface) {
-            if ($node->getType() == 'news_content') { // Adjust this based on your actual content type
-                $suggestions[] = 'page__news';
+
+ function yourtheme_preprocess_page(&$variables) {
+    if (\Drupal::routeMatch()->getRouteName() === 'entity.node.canonical') {
+        $node = \Drupal::routeMatch()->getParameter('node');
+
+        if ($node instanceof Node && $node->bundle() == 'news_content') {
+            $variables['news_item'] = [
+                'id' => $node->id(),
+                'title' => $node->getTitle(),
+                'body' => $node->get('body')->value,
+                'image' => 'MISSING',
+                'date' => 'MISSING',
+            ];
+
+            // Debugging
+            \Drupal::logger('custom_debug')->notice('Node ID: ' . $node->id());
+            \Drupal::logger('custom_debug')->notice('Title: ' . $node->getTitle());
+            \Drupal::logger('custom_debug')->notice('Body: ' . $node->get('body')->value);
+
+            // Check if field_news_image exists
+            if ($node->hasField('field_news_image') && !$node->get('field_news_image')->isEmpty()) {
+                $image_entity = $node->get('field_news_image')->entity;
+                $file_url_generator = \Drupal::service('file_url_generator');
+
+                if ($image_entity instanceof \Drupal\file\Entity\File) {
+                    $variables['news_item']['image'] = $file_url_generator->generateAbsoluteString($image_entity->getFileUri());
+                    \Drupal::logger('custom_debug')->notice('Image URL: ' . $variables['news_item']['image']);
+                }
+            } else {
+                \Drupal::logger('custom_debug')->warning('field_news_image is missing or empty.');
+            }
+
+            // Check if field_news_date exists
+            if ($node->hasField('field_news_date') && !$node->get('field_news_date')->isEmpty()) {
+                $variables['news_item']['date'] = $node->get('field_news_date')->value;
+                \Drupal::logger('custom_debug')->notice('Date: ' . $variables['news_item']['date']);
+            } else {
+                \Drupal::logger('custom_debug')->warning('field_news_date is missing or empty.');
             }
         }
     }
 }
+
+
+
 ?>

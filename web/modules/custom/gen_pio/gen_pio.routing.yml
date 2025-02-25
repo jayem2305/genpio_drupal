@@ -29,3 +29,19 @@ gen_pio_theme.aboutus:
     _title: "About Us"
   requirements:
     _permission: "access content" # Adjust permissions as necessary
+
+gen_pio_theme.brgy_officials:
+  path: "/officials"
+  defaults:
+    _controller: '\Drupal\gen_pio\Controller\NewsController::brgy_officials'
+    _title: "Barangay Officials"
+  requirements:
+    _permission: "access content"
+
+gen_pio_theme.brgy_SKofficials:
+  path: "/Skofficials"
+  defaults:
+    _controller: '\Drupal\gen_pio\Controller\NewsController::brgy_SKofficials'
+    _title: "Barangay Officials"
+  requirements:
+    _permission: "access content"

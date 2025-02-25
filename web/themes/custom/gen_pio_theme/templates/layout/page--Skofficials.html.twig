@@ -1,0 +1,49 @@
+{% include '@gen_pio_theme/layout/header.html.twig' %}
+
+<section class="team-content">
+    <div class="container ps-5 pe-5">
+        <div class="row">
+            <div class="col text-center">
+                <small>BARANGAY PIO DEL PILAR</small>   
+                <h1>SK Officials</h1>
+            </div>
+        </div>
+
+        <div class="row d-flex justify-content-center mt-5">
+            {% if sk_officials is defined and sk_officials %}
+                {% set sk_chairman = [] %}
+                {% set other_officials = [] %}
+
+                {% for official in sk_officials %}
+                    {% if official.position == 'SK Chairman' %}
+                        {% set sk_chairman = [official] %}
+                    {% else %}
+                        {% set other_officials = other_officials|merge([official]) %}
+                    {% endif %}
+                {% endfor %}
+
+                {% set sorted_officials = sk_chairman|merge(other_officials) %}
+                {% set total_officials = sorted_officials|length %}
+
+                {# Loop through sorted officials and apply column sizes #}
+                {% for official in sorted_officials %}
+                    {% if official.position == 'SK Chairman' %}
+                        {% set column_class = 'col-md-12' %}
+                    {% else %}
+                        {% set column_class = 'col-md-4' %}
+                    {% endif %}
+
+                    <div class="{{ column_class }} text-center brgy-staff justify-content-around">
+                        {% if official.image %}
+                            <img src="{{ official.image }}" alt="{{ official.label }}" class="img-fluid">
+                        {% endif %}
+                        <h4>{{ official.label }}</h4>
+                        <small>{{ official.position }}</small>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center">No officials available.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
