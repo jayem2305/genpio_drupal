@@ -26,9 +26,9 @@
                                         <h5 class="card-title">{{ news_item.label }}</h5>
                                         <p class="card-text">{{ news_item.body.value|striptags|raw }}</p>
                                         <p class="card-text card-a">
-                                            <a href="{{ path('gen_pio.news_detail') }}" role="button">
-                                                Read More <i class="fas fa-arrow-right"></i>
-                                            </a>
+                                        <a href="{{ path('gen_pio.news_detail', {'id': news_item.id}) }}" role="button">
+                                            Read More <i class="fas fa-arrow-right"></i>
+                                        </a>
                                         </p>
                                     </div>
                                 </div>
