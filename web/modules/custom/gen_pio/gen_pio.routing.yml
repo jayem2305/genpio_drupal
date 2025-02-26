@@ -6,6 +6,14 @@ gen_pio.news_detail:
   requirements:
     _permission: "access content" # Adjust permissions as necessary
 
+gen_pio.events_detail:
+  path: "/event/{id}"
+  defaults:
+    _controller: '\Drupal\gen_pio\Controller\NewsController::eventsDetail'
+    _title: "Event"
+  requirements:
+    _permission: "access content" # Adjust permissions as necessary
+
 gen_pio_theme.all_news:
   path: "/all-news"
   defaults:
