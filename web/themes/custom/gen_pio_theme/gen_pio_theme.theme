@@ -228,3 +228,4 @@ if (!empty($events_nids) && $id_event) {
 
 
 ?>
+
